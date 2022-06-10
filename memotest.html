@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap');
+
+        *{  margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+        button{
+            background-color: red;
+            border-radius: 15px;
+            padding: 5px 15px;
+            font-family: 'Passion One', cursive;
+            font-size: 30px;
+            color: white;
+            border: none;
+            -webkit-box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0); 
+            box-shadow: -10px 0px 13px -7px #000000, 10px 0px 13px -7px #000000, 5px 5px 15px 5px rgba(0,0,0,0);
+        }
+        .contenedor-memotest {
+            width: 100%;
+            height: 100vh;
+        }
+        .barra-informacion {
+            width: 100%;
+            height: 10%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-bottom: 5px solid blue;
+            font-family: 'Passion One', cursive;;
+            font-size: 35px;
+            background-color: skyblue; 
+            color: #FFFFFF;
+            background: #0e8dbc;
+            text-shadow: 0 1px 0 #CCCCCC, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
+            color: #FFFFFF;
+            background: #0e8dbc;
+        }
+        #estado {
+            background-color: grey;
+            padding: 6px 20px;
+           
+            border-radius: 20px;
+        }
+        #parejas {
+            background-color: grey;
+            padding: 6px 20px;
+           
+            border-radius: 20px;
+        }
+        .contenedor-cuadros {
+            width: 100%;
+            height: 90%;          
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr ;
+        }
+        .cuadro {
+            border: 1px solid black;
+        } 
+        .red {
+            background-color: red;
+        }
+        .yellow {
+            background-color: yellow;
+        }
+        .green {
+            background-color: green;
+        }
+        .purple {
+            background-color: purple;
+        }
+        .gray {
+            background-color: gray;
+        }
+        .pink {
+            background-color: pink;
+        }
+        .white {
+            background-color: white;
+        }
+        .none {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor-memotest">
+        <div class="barra-informacion">
+            <p id="estado">Dale click al boton 'Empezar'</p>
+            <button id="empezar-juego" >Empezar</button>
+            <button id="reiniciar-juego" class="none" >Reiniciar</button>
+            <p id="parejas">Parejas 0 de 0</p>
+        </div>
+        <div class="contenedor-cuadros" id="contenedor-cuadros">
+            <div id="1" class="cuadro"></div>
+            <div id="2" class="cuadro"></div>
+            <div id="3" class="cuadro"></div>
+            <div id="4" class="cuadro"></div>
+            <div id="5" class="cuadro"></div>
+            <div id="6" class="cuadro"></div>
+            <div id="7" class="cuadro"></div>
+            <div id="8" class="cuadro"></div>
+            <div id="9" class="cuadro"></div>
+            <div id="10" class="cuadro"></div>
+            <div id="11" class="cuadro"></div>
+            <div id="12" class="cuadro"></div>
+        </div>
+    </div>
+    <script>
+        document.querySelector('#empezar-juego').onclick = empezarJuego
+        document.querySelector('#reiniciar-juego').onclick = reiniciarJuego
+        const cuadros = document.querySelectorAll('.cuadro')
+        const arrayCuadros = Array.from(cuadros) 
+        const colores = ['red', 'yellow', 'green', 'purple', 'gray', 'pink']
+
+        function empezarJuego(){
+            reiniciarJuego()
+            actualizarParejas(0)
+            ocultarBoton('empezar')
+            mostrarBoton('reiniciar')
+            actualizarEstado('Comienza la partida')
+            designarCuadros()
+            manejarRonda()
+        }
+        function designarCuadros() {
+            
+            let arrayRandom = []
+             arrayCuadros.map(($cuadro, index) => {      
+                while(arrayRandom.length === index){
+                let numeroRandom = Math.floor(Math.random()*6)
+                if(arrayRandom.filter(num =>num === numeroRandom).length <= 1){
+                arrayRandom.push(numeroRandom)
+                $cuadro.classList.add(colores[numeroRandom])}
+                agregarBlanco($cuadro)
+              }
+             }
+            )
+        }
+        function manejarRonda() {
+            let cuadrosSeleccionados = [];
+            let cuadrosAcertados = [];
+            let cantParejas = 0
+            cuadros.forEach(($cuadro) => $cuadro.onclick = (e) => {
+                cuadrosSeleccionados.push(e.target)
+                eliminarBlanco($cuadro)
+                console.log(cuadrosSeleccionados)
+                if(cuadrosSeleccionados.length === 2 && cuadrosAcertados.length<13){
+                if(obtenerColor(cuadrosSeleccionados[0]) === obtenerColor(cuadrosSeleccionados[1]) && cuadrosSeleccionados[0].id != cuadrosSeleccionados[1].id && obtenerColor(cuadrosSeleccionados[0]) != undefined && obtenerColor(cuadrosSeleccionados[1]) != undefined ){
+                   const color = obtenerColor(cuadrosSeleccionados[0])
+                    setTimeout(() => { 
+                        cuadrosSeleccionados.map($cuadro => {
+                            $cuadro.classList.remove(color)
+                            cuadrosAcertados.push($cuadro)
+                            cuadrosSeleccionados=[]
+                            cantParejas++
+                            actualizarParejas(cantParejas/2)
+                            if(cuadrosAcertados.length === 12) {
+                                actualizarEstado('Felicitaciones, Ganaste!!!')
+                                reiniciarJuego()
+                            }
+                        })
+                        
+                    }, 500);
+               
+                
+                }else {
+
+                    setTimeout(() => {
+                        agregarBlanco(cuadrosSeleccionados[0])
+                        agregarBlanco(cuadrosSeleccionados[1])
+                        cuadrosSeleccionados=[]
+                    }, 500);
+                    console.log('son diferentes')   
+                }
+              }
+             } 
+            );
+        }
+        function reiniciarJuego() {
+            cuadros.forEach(($cuadro) => $cuadro.classList.remove('red', 'yellow', 'green', 'purple', 'gray', 'pink', 'white') )
+            ocultarBoton('reiniciar')
+            mostrarBoton('empezar')
+            actualizarParejas(0)
+        }
+        function actualizarParejas(cantParejas) {
+            document.querySelector('#parejas').textContent = `Parejas Encontradas ${cantParejas} de 6`
+        }
+        function actualizarEstado(texto) {
+            document.querySelector('#estado').textContent= texto
+        }
+        function ocultarBoton(boton) {
+            document.querySelector(`#${boton}-juego`).classList.add('none')
+        }
+        function mostrarBoton(boton) {
+            document.querySelector(`#${boton}-juego`).classList.remove('none')
+        }
+        function agregarBlanco($cuadro){
+            $cuadro.classList.add('white')
+        }
+        function eliminarBlanco($cuadro){
+            $cuadro.classList.remove('white')
+        }
+        function obtenerColor($div){
+            for(let i=0; i<colores.length;i++){
+                if($div.classList.contains(colores[i])){
+                    console.log(colores[i])
+                    return colores[i]
+                } 
+            }
+        }
+        
+       
+    </script>
+</body>
+</html>
